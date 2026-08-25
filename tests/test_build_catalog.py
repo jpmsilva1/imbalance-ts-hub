@@ -9,7 +9,7 @@ def _scan_row(**overrides):
         "id": "gluonts:m4_hourly:h1", "source": "gluonts", "collection": "m4_hourly",
         "name": "h1", "granularity": "H", "time_column": "", "length": 500,
         "dtype": "float64", "content_hash": "abc123",
-        "N": 490, "n_normal": 470, "n_rare": 20, "IR": 23.5, "%Rare": 4.08,
+        "N": 490, "n_normal": 470, "n_rare": 20, "IR": 0.04, "%Rare": 4.08,
         "imbalance_level": "severe",
         "missing_pct": 0.0, "mean": 100.0, "std": 10.0, "cv": 0.1,
         "skewness": 0.5, "kurtosis": 1.2, "autocorr_lag1": 0.8,
@@ -49,7 +49,7 @@ def test_accepted_series_lands_in_series_csv_with_full_catalog_schema():
 
 def test_series_with_no_rare_regime_is_excluded_from_series_csv_but_audited():
     scan_df = pd.DataFrame([_scan_row(
-        id="gluonts:m4_hourly:h2", n_rare=0, n_normal=490, IR=float("inf"), **{"%Rare": 0.0},
+        id="gluonts:m4_hourly:h2", n_rare=0, n_normal=490, IR=0.0, **{"%Rare": 0.0},
         imbalance_level="none",
     )])
 

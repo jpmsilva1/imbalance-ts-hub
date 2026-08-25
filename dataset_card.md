@@ -91,7 +91,7 @@ Numeric ranges (min / median / max) for the columns most people filter on:
 |---|---|---|---|
 | `length` | 12 | 330 | 526,980 |
 | `%Rare` | 0.01 | 8.70 | 100.00 |
-| `IR` | 0 | 10.50 | 8,766 |
+| `IR` | 0 | 0.10 | ∞ (all-rare series, `n_normal=0`) |
 
 ## Dataset summary
 

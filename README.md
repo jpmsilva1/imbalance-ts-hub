@@ -100,14 +100,14 @@ imbalance_hub client  -- load_catalog() / pull() / pull_many()
 
 **The inclusion gate is `n_rare > 0`.** A series with no boxplot outliers at the paper's `coef=1.5` has no rare regime by construction — it's definitionally not imbalanced, so it's excluded. Every band of severity above that line is kept; there's no further curation beyond the gate.
 
-**Severity is computed, not hand-labeled**, from `%Rare` (note the inversion — *lower* `%Rare` means *more* imbalanced, since `IR = n_normal / n_rare`):
+**Severity is computed, not hand-labeled**, from `%Rare` (note the inversion — *lower* `%Rare` means *more* imbalanced, since `IR = n_rare / n_normal`, so *lower* `IR` also means *more* imbalanced):
 
 | `imbalance_level` | `%Rare` | approx. `IR` |
 |---|---|---|
-| `extreme` | `< 1` | `> 99` |
-| `severe` | `1 – 5` | `19 – 99` |
-| `moderate` | `5 – 15` | `5.7 – 19` |
-| `mild` | `≥ 15` | `< 5.7` |
+| `extreme` | `< 1` | `< 0.01` |
+| `severe` | `1 – 5` | `0.01 – 0.05` |
+| `moderate` | `5 – 15` | `0.05 – 0.18` |
+| `mild` | `≥ 15` | `≥ 0.18` |
 
 Scoring params are fixed to match the paper across the whole catalog: `rel_thres=0.9`, `rel_coef=1.5`, `rel_xtrm_type="both"`, time-delay embedding with `k=10`, scored on **raw series** (not differenced — see `diff` column). They're also recorded per row, so a future change to these defaults is traceable without re-deriving anything.
 
@@ -194,7 +194,7 @@ What you can actually pass to `.isin([...])` / comparisons in the Quick start ex
 |---|---|---|---|---|---|
 | `N` | 2 | 72 | 320 | 812 | 526,970 |
 | `length` | 12 | 82 | 330 | 822 | 526,980 |
-| `IR` | 0 | 6.38 | 10.50 | 18.67 | 8,766 |
+| `IR` | 0 | 0.05 | 0.10 | 0.16 | ∞ (all-rare series, `n_normal=0`) |
 | `%Rare` | 0.01 | 5.08 | 8.70 | 13.54 | 100.00 |
 | `missing_pct` | 0 | 0 | 0 | 0 | 3.95 |
 | `seasonal_period` | 1 | 7 | 12 | 12 | 1,440 (20 null) |

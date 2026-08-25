@@ -55,9 +55,15 @@ def compute_reference(df: pd.DataFrame) -> dict:
     numeric = {}
     for col in NUMERIC_COLUMNS:
         s = df[col].dropna()
-        q = s.quantile([0, 0.25, 0.5, 0.75, 1.0])
+        q = s.quantile([0.25, 0.5, 0.75])
         entry = {label: _round(q[frac], col) for label, frac in
-                 [("min", 0), ("25%", 0.25), ("50%", 0.5), ("75%", 0.75), ("max", 1.0)]}
+                 [("25%", 0.25), ("50%", 0.5), ("75%", 0.75)]}
+        # min/max via .min()/.max() rather than quantile(0)/quantile(1.0):
+        # pandas' quantile() does linear interpolation even at the endpoints,
+        # which yields NaN (inf - inf) when the column contains inf (e.g. IR
+        # for a series that's all rare points, n_normal == 0).
+        entry["min"] = _round(s.min(), col)
+        entry["max"] = _round(s.max(), col)
         if df[col].isna().any():
             entry["null_count"] = int(df[col].isna().sum())
         numeric[col] = entry

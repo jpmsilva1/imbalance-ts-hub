@@ -124,7 +124,7 @@ def score_series(series: pd.Series) -> dict:
         embedded = ie.time_delay_embedding(clean, k=K)
         with warnings.catch_warnings():
             # compute_imbalance warns when a series has no boxplot outliers
-            # (n_rare=0, IR=inf) -- expected, not an error; see imbalance_eval.py.
+            # (n_rare=0, IR=0) -- expected, not an error; see imbalance_eval.py.
             warnings.simplefilter("ignore")
             stats = ie.compute_imbalance(
                 embedded["target"], rel_thres=REL_THRES, rel_xtrm_type=REL_XTRM_TYPE, rel_coef=REL_COEF
