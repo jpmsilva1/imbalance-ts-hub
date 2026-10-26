@@ -1,6 +1,6 @@
 import pandas as pd
 
-from scripts.build_catalog import build_catalog
+from scripts.build_catalog import build_catalog, carry_over_blob_columns
 
 
 def _scan_row(**overrides):
@@ -126,3 +126,15 @@ def test_series_csv_is_sorted_by_id():
     assert series_df["id"].tolist() == [
         "gluonts:a_collection:1", "gluonts:m_collection:5", "gluonts:z_collection:9",
     ]
+
+
+def test_carry_over_blob_columns_keeps_unchanged_hashes_only():
+    new = pd.DataFrame({"id": ["a", "b", "c"], "content_hash": ["h1", "CHANGED", "h3"],
+                        "size_bytes": [pd.NA] * 3, "blob_path": [pd.NA] * 3, "hf_revision": [pd.NA] * 3,
+                        "pipeline_version": [pd.NA] * 3, "ingested_at": [pd.NA] * 3})
+    old = pd.DataFrame({"id": ["a", "b"], "content_hash": ["h1", "h2"], "size_bytes": [10, 20],
+                        "blob_path": ["p/a", "p/b"], "hf_revision": ["r", "r"],
+                        "pipeline_version": ["0.1.0"] * 2, "ingested_at": ["t"] * 2})
+    out = carry_over_blob_columns(new, old).set_index("id")
+    assert out.loc["a", "blob_path"] == "p/a"
+    assert pd.isna(out.loc["b", "blob_path"]) and pd.isna(out.loc["c", "blob_path"])

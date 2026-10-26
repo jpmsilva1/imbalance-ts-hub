@@ -97,6 +97,21 @@ def build_catalog(scan_df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
     return series_df, scanned_df
 
 
+BLOB_COLUMNS = ["size_bytes", "blob_path", "hf_revision", "pipeline_version", "ingested_at"]
+
+
+def carry_over_blob_columns(series_df: pd.DataFrame, previous: pd.DataFrame) -> pd.DataFrame:
+    """Keep already-uploaded blob metadata for ids whose content_hash is unchanged,
+    so a rebuild doesn't orphan every blob (upload_blobs only stages rows with
+    blob_path NA)."""
+    prev = previous.set_index("id")
+    same = series_df["id"].map(prev["content_hash"]) == series_df["content_hash"]
+    out = series_df.astype({c: "object" for c in BLOB_COLUMNS})
+    for c in BLOB_COLUMNS:
+        out.loc[same, c] = out.loc[same, "id"].map(prev[c]).values
+    return out
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--scan", default="scan_results.csv")
@@ -111,6 +126,9 @@ def main():
         print(f"warning: dropped {n_dropped} duplicate-id rows, ids: {list(dupes)}", file=sys.stderr)
     scan_df = deduped
     series_df, scanned_df = build_catalog(scan_df)
+    prev_path = Path(args.out_dir) / "series.csv"
+    if prev_path.exists():
+        series_df = carry_over_blob_columns(series_df, pd.read_csv(prev_path, low_memory=False))
 
     out_dir = Path(args.out_dir)
     out_dir.mkdir(exist_ok=True)
