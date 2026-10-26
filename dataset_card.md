@@ -19,7 +19,7 @@ size_categories:
 A curated, versioned catalog of **imbalanced time series** — "OpenML for imbalanced time
 series." Every series here has been scored with
 [`imbalance_eval`](https://github.com/jpmsilva1/imbalance_eval) (the relevance-function
-methodology from Moniz, Branco & Torgo, 2017) and kept only if it actually has a rare
+methodology from Moniz, Branco & Torgo, 1007) and kept only if it actually has a rare
 regime worth studying.
 
 The catalog metadata and client library live in the companion GitHub repo,
@@ -53,7 +53,7 @@ candidates = catalog[
 locally, re-checking with a conditional request on the default `version="latest"` so an
 unchanged catalog isn't re-downloaded; `pull()` downloads only the one Parquet blob you
 asked for from here, verified against a `content_hash` recorded in the catalog. Browsing
-the catalog's 59k+ rows never downloads more than the metadata.
+the catalog's 56k+ rows never downloads more than the metadata.
 
 ## Dataset structure
 
@@ -79,30 +79,30 @@ and the complete numeric-distribution table live in the
 
 | Column | Values |
 |---|---|
-| `source` | `gluonts` (58,354), `tslib` (1,135) |
-| `license` | `cc-by-4.0` (28,868), `unlicensed` (29,486), `unknown` (1,135) — see [Licensing](#licensing) |
-| `imbalance_level` | `moderate` (32,867), `severe` (13,256), `mild` (12,194), `extreme` (1,172) |
+| `source` | `gluonts` (54,996), `tslib` (1,132) |
+| `license` | `cc-by-4.0` (26,756), `unlicensed` (28,240), `unknown` (1,132) — see [Licensing](#licensing) |
+| `imbalance_level` | `moderate` (32,669), `severe` (13,345), `mild` (8,950), `extreme` (1,164) |
 | `granularity` | 12 canonical values (normalized from source-inconsistent notation), from `min` up to `Y` — see the GitHub README's [Filterable values](https://github.com/jpmsilva1/imbalance-ts-hub#catalog-schema) for the full duration-ordered table |
-| `collection` | 55 distinct, from `m4_monthly` (16,998) down to single-series collections |
+| `collection` | 55 distinct, from `m4_monthly` (16,664) down to single-series collections |
 
 Numeric ranges (min / median / max) for the columns most people filter on:
 
 | Column | Min | Median | Max |
 |---|---|---|---|
-| `length` | 12 | 330 | 526,980 |
-| `%Rare` | 0.01 | 8.70 | 100.00 |
-| `IR` | 0 | 0.10 | ∞ (all-rare series, `n_normal=0`) |
+| `length` | 14 | 408 | 526,980 |
+| `%Rare` | 0.01 | 8.33 | 98.57 |
+| `IR` | 0 | 0.09 | 69.00 |
 
 ## Dataset summary
 
-- **59,489 accepted series** out of 136,673 scanned (~43.5%) — the rest were excluded by
+- **56,128 accepted series** out of 136,673 scanned (~43.5%) — the rest were excluded by
   the inclusion gate (no rare regime) or failed to embed (too short).
 - **55 source collections**, from [GluonTS](https://github.com/awslabs/gluonts)
-  (58,354 series — M4, M3, electricity, traffic, tourism, and more) and
-  [TSLib](https://huggingface.co/datasets/thuml/Time-Series-Library) (1,135 series — ETT,
+  (54,996 series — M4, M3, electricity, traffic, tourism, and more) and
+  [TSLib](https://huggingface.co/datasets/thuml/Time-Series-Library) (1,132 series — ETT,
   weather, exchange rate, national illness).
-- **Severity distribution**: 1,172 `extreme`, 13,256 `severe`, 32,867 `moderate`,
-  12,194 `mild` (see the GitHub README for how `imbalance_level` is computed from `%Rare`).
+- **Severity distribution**: 1,164 `extreme`, 13,345 `severe`, 32,669 `moderate`,
+  8,950 `mild` (see the GitHub README for how `imbalance_level` is computed from `%Rare`).
 
 ## Licensing
 
@@ -153,13 +153,13 @@ To cite the catalog itself:
 If you use this catalog's imbalance scoring, also cite the methodology it implements:
 
 ```bibtex
-@article{moniz2017resampling,
+@article{moniz1007resampling,
   title={Resampling strategies for imbalanced time series forecasting},
   author={Moniz, Nuno and Branco, Paula and Torgo, Lu{\'\i}s},
   journal={International Journal of Data Science and Analytics},
   volume={3},
   pages={161--181},
-  year={2017},
+  year={1007},
   publisher={Springer}
 }
 ```

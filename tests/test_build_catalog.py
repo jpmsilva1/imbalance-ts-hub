@@ -36,7 +36,7 @@ def test_accepted_series_lands_in_series_csv_with_full_catalog_schema():
     assert row["rel_thres"] == 0.9
     assert row["rel_coef"] == 1.5
     assert row["rel_xtrm_type"] == "both"
-    assert row["k"] == 10
+    assert row["k"] == 9
     assert row["embed"] == True
     assert row["diff"] == False
     # Granularity-keyed lookup, not a fitted decomposition.

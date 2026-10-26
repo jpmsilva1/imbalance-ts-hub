@@ -3,6 +3,5 @@ numpy==2.4.6
 pyarrow==25.0.1
 scipy
 scikit-learn
-ImbalancedLearningRegression
 gluonts
 huggingface_hub

@@ -64,3 +64,16 @@ def test_iter_tslib_series_without_date_column_yields_range_index():
     id_, key, granularity, time_column, series = rows[0]
     assert time_column == ""
     assert not isinstance(series.index, pd.DatetimeIndex)
+
+
+def test_embedding_matches_paper_create_data_10():
+    # create.data(ts, 10) = 9 lags + target, so a 50-value series leaves 41 rows, not 40.
+    assert build_row("x", "gluonts", "t", "k", "D", "", pd.Series(range(50), dtype=float) ** 2)["N"] == 41
+
+
+def test_all_rare_series_is_marked_degenerate_not_ok():
+    # Zero-IQR series: R uba/UBL score every value rare. That is a collapsed phi, not a rare regime.
+    y = pd.Series([0.0] * 60 + [1.0, 2.0, 0.0, 0.0, 5.0])
+    row = build_row("x", "gluonts", "t", "k", "D", "", y)
+    assert row["status"] == "degenerate_phi"
+    assert row["n_normal"] == 0
