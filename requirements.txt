@@ -5,3 +5,4 @@ scipy
 scikit-learn
 gluonts
 huggingface_hub
+imbalance_eval @ git+https://github.com/jpmsilva1/imbalance_eval.git@f4f2d6b998b1316a3966a9d0618b43d0d60c1140

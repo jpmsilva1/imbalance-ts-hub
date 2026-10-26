@@ -225,9 +225,9 @@ The pipeline behind `catalog/series.csv` — useful if you want to reproduce it,
 pip install -r requirements.txt
 ```
 
-[`imbalance_eval`](https://github.com/jpmsilva1/imbalance_eval) isn't on PyPI yet, so it's
-not in `requirements.txt`. Either `pip install` it from a local checkout, or point
-`scripts/scan.py` at one directly:
+[`imbalance_eval`](https://github.com/jpmsilva1/imbalance_eval) isn't on PyPI, so `requirements.txt`
+pins it to a git commit (the catalog depends on its exact relevance function).
+To use a local checkout instead, point `scripts/scan.py` at it:
 
 ```bash
 export IMBALANCE_EVAL_PATH=~/imbalance_eval
