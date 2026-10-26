@@ -14,7 +14,7 @@ import pandas as pd
 REL_THRES = 0.9
 REL_COEF = 1.5
 REL_XTRM_TYPE = "both"
-K = 10
+K = 9  # lags; paper's create.data(ts, 10) -- see scan.py
 EMBED = True
 DIFF = False
 

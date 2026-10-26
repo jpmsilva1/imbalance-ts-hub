@@ -2,7 +2,7 @@
 """Phase 1: scan candidate time series datasets and score each with imbalance_eval.
 
 Pulls univariate series from GluonTS and the TSLib HuggingFace repo, embeds
-each with time_delay_embedding(k=10), scores it with compute_imbalance(), and
+each with time_delay_embedding(k=9), scores it with compute_imbalance(), and
 appends one row per series to a single results CSV. Designed to run
 unattended for a long time (~150k series) -- see README.md for usage.
 """
@@ -54,7 +54,9 @@ CSV_COLUMNS = [
 REL_THRES = 0.9
 REL_COEF = 1.5
 REL_XTRM_TYPE = "both"
-K = 10
+# The paper's create.data(ts, 10) = 9 lags + target, i.e. imbalance_eval k=9
+# (its k counts lags excluding the target), so 9 values are dropped, not 10.
+K = 9
 
 # Excluded because they're huge (would dominate runtime) or need manual setup.
 GLUONTS_EXCLUDE = {
@@ -131,7 +133,11 @@ def score_series(series: pd.Series) -> dict:
             )
         row.update(stats)
         row["imbalance_level"] = imbalance_level(stats["n_rare"], stats["%Rare"])
-        row["status"] = "ok"
+        # uba/UBL score a zero-IQR series entirely rare (n_normal == 0). That is a
+        # collapsed relevance function, not a rare regime, so it never enters the catalog.
+        row["status"] = "degenerate_phi" if stats["n_normal"] == 0 else "ok"
+        if row["status"] == "degenerate_phi":
+            row["note"] = "phi collapsed: every value scored rare (zero IQR)"
     except ValueError as e:
         row["status"] = "skipped_short"
         row["note"] = str(e)[:200]

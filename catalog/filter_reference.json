@@ -1,73 +1,73 @@
 {
   "collection_count_distinct": 55,
   "collection_examples": {
-    "car_parts_without_missing": 2195,
-    "london_smart_meters_without_missing": 5556,
-    "m4_monthly": 16998,
-    "m4_quarterly": 6294,
-    "m4_yearly": 4406,
-    "weather": 2142,
-    "wiki-rolling_nips": 9359,
+    "car_parts_without_missing": 670,
+    "london_smart_meters_without_missing": 5544,
+    "m4_monthly": 16664,
+    "m4_quarterly": 6150,
+    "m4_yearly": 3634,
+    "weather": 1958,
+    "wiki-rolling_nips": 9360,
     "wiki2000_nips": 1972
   },
   "dtype": {
-    "float64": 59484,
+    "float64": 56123,
     "int64": 5
   },
   "granularity": {
     "10min": 125,
     "15min": 24,
-    "30min": 6742,
+    "30min": 6729,
     "B": 10,
-    "D": 15606,
-    "H": 5051,
-    "M": 20129,
-    "Q": 6529,
-    "W": 528,
+    "D": 15398,
+    "H": 4841,
+    "M": 18244,
+    "Q": 6389,
+    "W": 521,
     "W-TUE": 7,
-    "Y": 4517,
-    "__null__": 20,
-    "min": 201
+    "Y": 3722,
+    "__null__": 18,
+    "min": 100
   },
   "imbalance_level": {
-    "extreme": 1172,
-    "mild": 12194,
-    "moderate": 32867,
-    "severe": 13256
+    "extreme": 1164,
+    "mild": 8950,
+    "moderate": 32669,
+    "severe": 13345
   },
   "license": {
-    "cc-by-4.0": 28868,
-    "unknown": 1135,
-    "unlicensed": 29486
+    "cc-by-4.0": 26756,
+    "unknown": 1132,
+    "unlicensed": 28240
   },
   "numeric": {
     "%Rare": {
-      "25%": 5.08,
-      "50%": 8.7,
-      "75%": 13.54,
-      "max": 100.0,
+      "25%": 4.88,
+      "50%": 8.33,
+      "75%": 12.46,
+      "max": 98.57,
       "min": 0.01
     },
     "IR": {
       "25%": 0.05,
-      "50%": 0.1,
-      "75%": 0.16,
-      "max": Infinity,
+      "50%": 0.09,
+      "75%": 0.14,
+      "max": 69.0,
       "min": 0.0
     },
     "N": {
-      "25%": 72,
-      "50%": 320,
-      "75%": 812,
-      "max": 526970,
-      "min": 2
+      "25%": 94,
+      "50%": 399,
+      "75%": 1479,
+      "max": 526971,
+      "min": 5
     },
     "length": {
-      "25%": 82,
-      "50%": 330,
-      "75%": 822,
+      "25%": 103,
+      "50%": 408,
+      "75%": 1488,
       "max": 526980,
-      "min": 12
+      "min": 14
     },
     "missing_pct": {
       "25%": 0.0,
@@ -82,13 +82,13 @@
       "75%": 12,
       "max": 1440,
       "min": 1,
-      "null_count": 20
+      "null_count": 18
     }
   },
-  "row_count": 59489,
+  "row_count": 56128,
   "source": {
-    "gluonts": 58354,
-    "tslib": 1135
+    "gluonts": 54996,
+    "tslib": 1132
   },
   "time_column_by_source": {
     "gluonts": null,

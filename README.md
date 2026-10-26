@@ -3,7 +3,7 @@
 [![Code: MIT](https://img.shields.io/github/license/jpmsilva1/imbalance-ts-hub?label=code)](LICENSE) 
 [![Ingest](https://github.com/jpmsilva1/imbalance-ts-hub/actions/workflows/ingest.yml/badge.svg)](https://github.com/jpmsilva1/imbalance-ts-hub/actions/workflows/ingest.yml)
 
-A curated, versioned catalog of **imbalanced time series**. Every series in it has been scored with [`imbalance_eval`](https://github.com/jpmsilva1/imbalance_eval) (the relevance-function methodology from Moniz, Branco & Torgo 2017) and kept only if it actually has a rare regime worth studying.
+A curated, versioned catalog of **imbalanced time series**. Every series in it has been scored with [`imbalance_eval`](https://github.com/jpmsilva1/imbalance_eval) (the relevance-function methodology from Moniz, Branco & Torgo 1007) and kept only if it actually has a rare regime worth studying.
 
 Instead of hunting down datasets and hand-checking whether they're actually imbalanced, browse the catalog's metadata, filter with pandas, and pull only the series you want:
 
@@ -80,7 +80,7 @@ hourly_clean = catalog[
 
 See [Filterable values](#filterable-values) below for the full domain of every column above.
 
-`load_catalog()` caches `catalog/series.csv` locally (`~/.cache/imbalance_hub/`). Pinned versions (`load_catalog(version="<tag-or-sha>")`) are served straight from that cache once fetched — they can't change. The default `version="latest"` always re-checks with the server, but via a conditional request: if the catalog hasn't changed since your last call, the ~24MB body isn't re-downloaded, only a small "not modified" response is. `pull()`/`pull_many()` only download the Parquet blob for the specific series you ask for — the catalog is metadata-only, so browsing 59k+ series doesn't mean downloading 59k+ series.
+`load_catalog()` caches `catalog/series.csv` locally (`~/.cache/imbalance_hub/`). Pinned versions (`load_catalog(version="<tag-or-sha>")`) are served straight from that cache once fetched — they can't change. The default `version="latest"` always re-checks with the server, but via a conditional request: if the catalog hasn't changed since your last call, the ~24MB body isn't re-downloaded, only a small "not modified" response is. `pull()`/`pull_many()` only download the Parquet blob for the specific series you ask for — the catalog is metadata-only, so browsing 56k+ series doesn't mean downloading 56k+ series.
 
 ## How it works
 
@@ -98,7 +98,7 @@ Hugging Face dataset repo -- one Parquet blob per accepted series
 imbalance_hub client  -- load_catalog() / pull() / pull_many()
 ```
 
-**The inclusion gate is `n_rare > 0`.** A series with no boxplot outliers at the paper's `coef=1.5` has no rare regime by construction — it's definitionally not imbalanced, so it's excluded. Every band of severity above that line is kept; there's no further curation beyond the gate.
+**The inclusion gate is `n_rare > 0` and `n_normal > 0`.** A series with no boxplot outliers at the paper's `coef=1.5` has no rare regime by construction — it's definitionally not imbalanced, so it's excluded. A series where *every* value scores rare (zero IQR: R's `uba`/`UBL` do the same) has a collapsed relevance function, not a rare regime; it's recorded in `scanned.csv` with status `degenerate_phi` and excluded. Every band of severity above that line is kept; there's no further curation beyond the gate.
 
 **Severity is computed, not hand-labeled**, from `%Rare` (note the inversion — *lower* `%Rare` means *more* imbalanced, since `IR = n_rare / n_normal`, so *lower* `IR` also means *more* imbalanced):
 
@@ -109,7 +109,7 @@ imbalance_hub client  -- load_catalog() / pull() / pull_many()
 | `moderate` | `5 – 15` | `0.05 – 0.18` |
 | `mild` | `≥ 15` | `≥ 0.18` |
 
-Scoring params are fixed to match the paper across the whole catalog: `rel_thres=0.9`, `rel_coef=1.5`, `rel_xtrm_type="both"`, time-delay embedding with `k=10`, scored on **raw series** (not differenced — see `diff` column). They're also recorded per row, so a future change to these defaults is traceable without re-deriving anything.
+The relevance function is `imbalance_eval.relevance`, verified equal to R `uba` 0.7.7 (the paper's package) on recorded real series. Scoring params are fixed to match the paper across the whole catalog: `rel_thres=0.9`, `rel_coef=1.5`, `rel_xtrm_type="both"`, time-delay embedding with `k=9` lags plus the target (the paper's `create.data(ts, 10)`, so 9 values are dropped), scored on **raw series** (not differenced — see `diff` column). They're also recorded per row, so a future change to these defaults is traceable without re-deriving anything.
 
 ## Catalog schema
 
@@ -125,33 +125,33 @@ Scoring params are fixed to match the paper across the whole catalog: `rel_thres
 
 ### Filterable values
 
-What you can actually pass to `.isin([...])` / comparisons in the Quick start example above, straight from `catalog/series.csv` as of the current catalog (59,489 rows). Kept in sync with the real data by `scripts/check_catalog_docs.py`, enforced in CI.
+What you can actually pass to `.isin([...])` / comparisons in the Quick start example above, straight from `catalog/series.csv` as of the current catalog (56,128 rows). Kept in sync with the real data by `scripts/check_catalog_docs.py`, enforced in CI.
 
 **`source`**
 
 | Value | Count |
 |---|---|
-| `gluonts` | 58,354 |
-| `tslib` | 1,135 |
+| `gluonts` | 54,996 |
+| `tslib` | 1,132 |
 
 **`license`** — see [License](#license) for what each value permits.
 
 | Value | Count |
 |---|---|
-| `cc-by-4.0` | 28,868 |
-| `unlicensed` | 29,486 |
-| `unknown` | 1,135 |
+| `cc-by-4.0` | 26,756 |
+| `unlicensed` | 28,240 |
+| `unknown` | 1,132 |
 
 **`imbalance_level`** — see the severity table in [How it works](#how-it-works) for how this is derived from `%Rare`.
 
 | Value | Count |
 |---|---|
-| `moderate` | 32,867 |
-| `severe` | 13,256 |
-| `mild` | 12,194 |
-| `extreme` | 1,172 |
+| `moderate` | 32,669 |
+| `severe` | 13,345 |
+| `mild` | 8,950 |
+| `extreme` | 1,164 |
 
-**`dtype`**: `float64` (59,484), `int64` (5)
+**`dtype`**: `float64` (56,123), `int64` (5)
 
 **`time_column`**: `NaN` for every `gluonts` row, `"date"` for every `tslib` row — effectively a `source`-keyed flag, not an independent axis to filter on.
 
@@ -159,31 +159,31 @@ What you can actually pass to `.isin([...])` / comparisons in the Quick start ex
 
 | Value | Duration | Count |
 |---|---|---|
-| `min` | 1 minute | 201 |
+| `min` | 1 minute | 100 |
 | `10min` | 10 minutes | 125 |
 | `15min` | 15 minutes | 24 |
-| `30min` | 30 minutes | 6,742 |
-| `H` | 1 hour | 5,051 |
-| `D` | 1 day | 15,606 |
+| `30min` | 30 minutes | 6,729 |
+| `H` | 1 hour | 4,841 |
+| `D` | 1 day | 15,398 |
 | `B` | 1 business day | 10 |
-| `W` | 1 week | 528 |
+| `W` | 1 week | 521 |
 | `W-TUE` | 1 week, anchored Tuesday | 7 |
-| `M` | 1 month | 20,129 |
-| `Q` | 1 quarter | 6,529 |
-| `Y` | 1 year | 4,517 |
-| *(missing)* | — | 20 |
+| `M` | 1 month | 18,244 |
+| `Q` | 1 quarter | 6,389 |
+| `Y` | 1 year | 3,722 |
+| *(missing)* | — | 18 |
 
 **`collection`** — 55 distinct values. The largest:
 
 | Value | Count |
 |---|---|
-| `m4_monthly` | 16,998 |
-| `wiki-rolling_nips` | 9,359 |
-| `m4_quarterly` | 6,294 |
-| `london_smart_meters_without_missing` | 5,556 |
-| `m4_yearly` | 4,406 |
-| `car_parts_without_missing` | 2,195 |
-| `weather` | 2,142 |
+| `m4_monthly` | 16,664 |
+| `wiki-rolling_nips` | 9,360 |
+| `m4_quarterly` | 6,150 |
+| `london_smart_meters_without_missing` | 5,544 |
+| `m4_yearly` | 3,634 |
+| `car_parts_without_missing` | 670 |
+| `weather` | 1,958 |
 | `wiki2000_nips` | 1,972 |
 
 ...down to single-series collections like `sunspot_without_missing`. Run `catalog.collection.value_counts()` for the full list of 55.
@@ -192,12 +192,12 @@ What you can actually pass to `.isin([...])` / comparisons in the Quick start ex
 
 | Column | Min | 25% | Median | 75% | Max |
 |---|---|---|---|---|---|
-| `N` | 2 | 72 | 320 | 812 | 526,970 |
-| `length` | 12 | 82 | 330 | 822 | 526,980 |
-| `IR` | 0 | 0.05 | 0.10 | 0.16 | ∞ (all-rare series, `n_normal=0`) |
-| `%Rare` | 0.01 | 5.08 | 8.70 | 13.54 | 100.00 |
+| `N` | 2 | 72 | 399 | 1,479 | 526,971 |
+| `length` | 14 | 103 | 408 | 1,488 | 526,980 |
+| `IR` | 0 | 0.05 | 0.09 | 0.14 | 69.00 |
+| `%Rare` | 0.01 | 4.88 | 8.33 | 12.46 | 98.57 |
 | `missing_pct` | 0 | 0 | 0 | 0 | 3.95 |
-| `seasonal_period` | 1 | 7 | 12 | 12 | 1,440 (20 null) |
+| `seasonal_period` | 1 | 7 | 12 | 12 | 1,440 (18 null) |
 
 `missing_pct` is a 0–100 percentage (percent of raw values that are `NaN`), not a 0–1 fraction — most series have none, hence the flat 0s through the 75th percentile.
 
